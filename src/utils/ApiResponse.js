@@ -6,3 +6,5 @@ class ApoResponse {
         this.success = statusCode <400
     }
 }
+
+export{ApoResponse}
