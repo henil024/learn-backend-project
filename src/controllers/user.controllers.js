@@ -10,12 +10,13 @@ const generateAccessAndRefereshToken = async(userId)=>{
         const accesToken = user.generateAccessToken()
         const refereshToken = user.generateRefreshToken()
 
-        user.refereshToken = refereshToken
+        user.refreshToken = refereshToken
         await user.save({validateBeforeSave: false})
         
         return{accesToken,refereshToken}
 
     } catch (error) {
+        console.error("Token generation error:", error);
         throw new ApiError(500, "Somthing went wrong while generating Access and Referesh Token")
     }
 }
@@ -111,7 +112,7 @@ const loginUser = asyncHandler(async(req,res)=>{
         throw new ApiError(404,"User does not exist")
     }
 
-    const isPassowrdValid = await user.isPasswordCorrect(password)
+    const isPassowrdValid = await user.isPasswordCorrect(password);
 
     if (!isPassowrdValid) {
         throw new ApiError(401,"invalid User Cradentials")
@@ -119,8 +120,7 @@ const loginUser = asyncHandler(async(req,res)=>{
 
     const {accesToken,refereshToken} = await generateAccessAndRefereshToken(user._id)
 
-    const logedinUser = await user.findById(user._id).
-    select("-password -refreshToken")
+    const logedinUser = await User.findById(user._id).select("-password -refreshToken")
 
     const options ={
         httpOnly: true,
